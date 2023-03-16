@@ -9,23 +9,7 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
-class RegexMatchesTask implements Callable<Boolean> {
-    static final int TASK_TIME_LIMIT = 7000;
-    private final String text;
-    private final String regex;
-
-    RegexMatchesTask(@NotNull String text, @NotNull String regex) {
-        this.text = text;
-        this.regex = regex;
-    }
-
-    @Override
-    public Boolean call() {
-        return Pattern.compile(regex).matcher(text).matches();
-    }
-}
 
 public class Main {
     private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
