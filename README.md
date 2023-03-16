@@ -18,3 +18,8 @@ the second one.
     - You can move an execution of function to a separate thread pool.
     - It provides beautiful API to stop the running tasks (instead of `while(true)` or its analogues)
 - Logging errors (TLE and etc) via [Logger](https://docs.oracle.com/javase/7/docs/api/java/util/logging/Logger.html).
+
+### Remark
+
+Probably, it was expected that I should refactor this function to kotlin, but I haven't thought about it (P.S. I can do
+it too).
