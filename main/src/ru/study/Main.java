@@ -16,12 +16,16 @@ public class Main {
 
     public static Optional<Boolean> matches(@NotNull String text, @NotNull String regex) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
-        Future<Boolean> future = executorService.submit(new RegexMatchesTask(text, regex));
+        Optional<RegexMatchesTask> task = RegexMatchesTask.RegexMatchesTaskFactory.build(text, regex);
+        if (task.isEmpty()) {
+            return Optional.empty();
+        }
+        Future<Boolean> future = executorService.submit(task.get());
         try {
-            return Optional.of(future.get(RegexMatchesTask.TASK_TIME_LIMIT, TimeUnit.MILLISECONDS));
+            return Optional.of(future.get(Constants.TASK_TIME_LIMIT, TimeUnit.MILLISECONDS));
         } catch (TimeoutException e) {
             future.cancel(true);
-            LOGGER.log(Level.INFO, "Matches function call timeout exceeded!");
+            LOGGER.log(Level.INFO, Constants.TIMEOUT_EXCEEDED_MESSAGE);
             return Optional.empty();
         } catch (InterruptedException e) {
             LOGGER.log(Level.SEVERE, e.getMessage());
@@ -31,7 +35,7 @@ public class Main {
             LOGGER.log(Level.SEVERE, e.getMessage());
             return Optional.empty();
         } finally {
-            executorService.shutdownNow();
+            executorService.shutdown();
         }
     }
 
@@ -49,7 +53,6 @@ public class Main {
         Optional<Boolean> result = matches(text, pattern);
         result.ifPresentOrElse(
                 valueGetter -> System.out.println(valueGetter.booleanValue()),
-                () -> LOGGER.log(Level.WARNING, "Matches function internal error!")
-        );
+                () -> LOGGER.log(Level.WARNING, Constants.INTERNAL_ERROR_MESSAGE));
     }
 }
