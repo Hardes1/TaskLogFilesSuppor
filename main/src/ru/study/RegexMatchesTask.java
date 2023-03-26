@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static ru.study.Constants.REGEX_MAX_LENGTH;
@@ -13,7 +14,7 @@ import static ru.study.Constants.REGEX_MAX_LENGTH;
 public class RegexMatchesTask implements Callable<Boolean> {
     private static final Logger LOGGER = LoggerFactory.getLogger(RegexMatchesTask.class);
 
-    private final InterruptableCharSequence text;
+    private final InterruptibleCharSequence text;
 
     private final String regex;
 
@@ -21,13 +22,15 @@ public class RegexMatchesTask implements Callable<Boolean> {
         if (regex.length() > REGEX_MAX_LENGTH) {
             throw new IllegalArgumentException(Constants.REGEX_TOO_LARGE_MESSAGE);
         }
-        this.text = new InterruptableCharSequence(text);
+        this.text = new InterruptibleCharSequence(text);
         this.regex = regex;
     }
 
     @Override
     public Boolean call() {
-        return Pattern.compile(regex).matcher(text).matches();
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher  = pattern.matcher(text);
+        return matcher.matches();
     }
 
     static class RegexMatchesTaskFactory {

@@ -1,9 +1,9 @@
 package ru.study;
 
-public class InterruptableCharSequence implements CharSequence {
+public class InterruptibleCharSequence implements CharSequence {
     CharSequence inner;
 
-    public InterruptableCharSequence(CharSequence inner) {
+    public InterruptibleCharSequence(CharSequence inner) {
         super();
         this.inner = inner;
     }
@@ -20,7 +20,7 @@ public class InterruptableCharSequence implements CharSequence {
     }
 
     public CharSequence subSequence(int start, int end) {
-        return new InterruptableCharSequence(inner.subSequence(start, end));
+        return new InterruptibleCharSequence(inner.subSequence(start, end));
     }
 
     @Override
