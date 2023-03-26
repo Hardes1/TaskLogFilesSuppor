@@ -18,5 +18,6 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="main" scope="TEST" />
+    <orderEntry type="library" name="ch.qos.logback.classic" level="project" />
   </component>
 </module>

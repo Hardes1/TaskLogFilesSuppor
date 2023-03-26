@@ -1,17 +1,17 @@
 package ru.study;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 import java.util.concurrent.Callable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import static ru.study.Constants.REGEX_MAX_LENGTH;
 
-class RegexMatchesTask implements Callable<Boolean> {
-    private static final Logger LOGGER = Logger.getLogger(RegexMatchesTask.class.getName());
+public class RegexMatchesTask implements Callable<Boolean> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RegexMatchesTask.class);
 
     private final InterruptableCharSequence text;
 
@@ -35,7 +35,7 @@ class RegexMatchesTask implements Callable<Boolean> {
             try {
                 return Optional.of(new RegexMatchesTask(text, regex));
             } catch (IllegalArgumentException e) {
-                LOGGER.log(Level.WARNING, e.getMessage());
+                LOGGER.warn(e.getMessage());
                 return Optional.empty();
             }
         }

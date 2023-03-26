@@ -1,20 +1,22 @@
 package ru.study;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.*;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 public class Main {
-    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     public static Optional<Boolean> matches(@NotNull String text, @NotNull String regex) {
+        return matches(text, regex, Constants.TASK_TIME_LIMIT);
+    }
+
+    public static Optional<Boolean> matches(@NotNull String text, @NotNull String regex, long timeLimitMicroseconds) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         Optional<RegexMatchesTask> task = RegexMatchesTask.RegexMatchesTaskFactory.build(text, regex);
         if (task.isEmpty()) {
@@ -22,37 +24,31 @@ public class Main {
         }
         Future<Boolean> future = executorService.submit(task.get());
         try {
-            return Optional.of(future.get(Constants.TASK_TIME_LIMIT, TimeUnit.MILLISECONDS));
+            return Optional.of(future.get(timeLimitMicroseconds, TimeUnit.MILLISECONDS));
         } catch (TimeoutException e) {
             future.cancel(true);
-            LOGGER.log(Level.INFO, Constants.TIMEOUT_EXCEEDED_MESSAGE);
+            LOGGER.info(Constants.TIMEOUT_EXCEEDED_MESSAGE);
             return Optional.empty();
         } catch (InterruptedException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage());
+            LOGGER.info(e.getMessage());
             Thread.currentThread().interrupt();
             return Optional.empty();
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, e.getMessage());
+            LOGGER.info(e.getMessage());
             return Optional.empty();
         } finally {
             executorService.shutdown();
         }
     }
 
-    private static void setUpLogger() {
-        Handler handler = new ConsoleHandler();
-        LOGGER.addHandler(handler);
-        LOGGER.setUseParentHandlers(false);
-    }
-
     public static void main(String[] args) {
-        setUpLogger();
         Scanner scanner = new Scanner(System.in);
         String text = scanner.nextLine();
         String pattern = scanner.nextLine();
         Optional<Boolean> result = matches(text, pattern);
+
         result.ifPresentOrElse(
                 valueGetter -> System.out.println(valueGetter.booleanValue()),
-                () -> LOGGER.log(Level.WARNING, Constants.INTERNAL_ERROR_MESSAGE));
+                () -> LOGGER.warn(Constants.INTERNAL_ERROR_MESSAGE));
     }
 }

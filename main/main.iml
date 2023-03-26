@@ -16,5 +16,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="ch.qos.logback.classic" level="project" />
   </component>
 </module>
