@@ -42,13 +42,16 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        String text = scanner.nextLine();
-        String pattern = scanner.nextLine();
-        Optional<Boolean> result = matches(text, pattern);
-
-        result.ifPresentOrElse(
-                valueGetter -> System.out.println(valueGetter.booleanValue()),
-                () -> LOGGER.warn(Constants.INTERNAL_ERROR_MESSAGE));
+        try {
+            Scanner scanner = new Scanner(System.in);
+            String text = scanner.nextLine();
+            String pattern = scanner.nextLine();
+            Optional<Boolean> result = matches(text, pattern);
+            result.ifPresentOrElse(
+                    valueGetter -> System.out.println(valueGetter.booleanValue()),
+                    () -> LOGGER.warn(Constants.INTERNAL_ERROR_MESSAGE));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
