@@ -81,11 +81,11 @@ public class RegexMatchesMethodTest {
     }
 
     @Test
-    public void ShouldReturnsEmptyWhenRegexIsLarge() throws IOException {
+    public void ShouldCancelWhenRegexIsLarge() throws IOException {
         Logger logger = (Logger) LoggerFactory.getLogger(RegexMatchesTask.class);
         ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
-        logger.addAppender(listAppender);
         listAppender.start();
+        logger.addAppender(listAppender);
         BufferedReader bufferedInputStream = new BufferedReader(new FileReader("./resources/large_text.txt"));
         final String text = "help";
         final String pattern = bufferedInputStream.readLine();
@@ -94,6 +94,34 @@ public class RegexMatchesMethodTest {
 
         assertEquals(listAppender.list.get(0).getFormattedMessage(), Constants.REGEX_TOO_LARGE_MESSAGE);
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void ShouldCancelWhenTimeLimitIsExceeded() throws IOException {
+        Logger logger = (Logger) LoggerFactory.getLogger(Main.class);
+        ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+        listAppender.start();
+        logger.addAppender(listAppender);
+        BufferedReader bufferedInputStream = new BufferedReader(new FileReader("./resources/big_text.txt"));
+        final String text = "help";
+        final String pattern = bufferedInputStream.readLine();
+
+        Optional<Boolean> result = Main.matches(text, pattern, 100);
+
+        assertEquals(listAppender.list.get(0).getFormattedMessage(), Constants.TIMEOUT_EXCEEDED_MESSAGE);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void ShouldMatchWhenTextBigAndRegexSmall() throws IOException {
+        BufferedReader bufferedInputStream = new BufferedReader(new FileReader("./resources/big_text.txt"));
+        final String text = bufferedInputStream.readLine();
+        final String pattern = "a+";
+
+        Optional<Boolean> result = Main.matches(text, pattern);
+
+        assertFalse(result.isEmpty());
+        assertTrue(result.get());
     }
 }
 
